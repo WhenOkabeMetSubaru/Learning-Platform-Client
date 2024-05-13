@@ -46,19 +46,19 @@ const UserProviderAuth = () => {
 
     useEffect(() => {
       
-        // if(auth.isAuthenticated()!==false){
-        //     fetch('http://localhost:8000/api/v1/user/info', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             'Authorization': 'Bearer ' + auth?.isAuthenticated()
-        //         }
-        //     }).then(res => res.json())
-        //         .then(data => {
+        if(auth.isAuthenticated()!==false){
+            fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/user/info`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + auth?.isAuthenticated()
+                }
+            }).then(res => res.json())
+                .then(data => {
 
-        //             setCurrentUser(data.data)
-        //         })
-        // }
+                    setCurrentUser(data.data)
+                })
+        }
         
     }, [])
 

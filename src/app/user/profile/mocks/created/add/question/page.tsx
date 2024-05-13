@@ -174,7 +174,7 @@ const AddNewQuestionMultiple = () => {
         <section>
             <header className='h-16 w-full left-0 flex justify-between px-3 items-center right-0 top-0 shadow'>
                 <div>
-                    <Link href={"/"}><div className='w-40 h-10 rounded bg-red-200 cursor-pointer' /></Link>
+                    <Link href={"/"}><div className='w-40 text-2xl font-semibold rounded  cursor-pointer' />TEST FEVER</Link>
                 </div>
                 <div>
                     <button onClick={handleAddQuestion} className='w-32 h-10 hover:bg-purple-700 bg-purple-600 text-white flex justify-center rounded items-center'><p>Save</p></button>

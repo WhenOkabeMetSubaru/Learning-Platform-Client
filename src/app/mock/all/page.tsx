@@ -62,7 +62,7 @@ const MockAll: NextPage = () => {
                             mockDetails?.map((item: any, i: number) => {
                                 return (
                                     <div key={item?._id} className='w-1/2 rounded-lg h-44 border relative cursor-pointer shadow p-3'>
-                                        <p className='font-semibold'>MOCK TEST {i + 1}</p>
+                                        <p className='font-semibold'>{item?.title}</p>
                                         <p className='mt-2 text-xs text-gray-400'>{item?.description}</p>
                                         <button onClick={() => { handleMockStart(item?._id); }} className='absolute right-5 bottom-4 hover:bg-white hover:border hover:text-blue-500 hover:border-blue-500 duration-300 w-24 h-8 rounded bg-blue-600 text-white flex justify-center items-center'>
                                             <p>Start</p>

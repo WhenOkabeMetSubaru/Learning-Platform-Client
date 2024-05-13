@@ -3,6 +3,7 @@ import UserLayout from '@/app/layout/userLayout'
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { SideMenuItems, sideMenuItemsObj } from './sideMenuItemsProfile';
+import { UserAuthFinal } from '@/features/contextApi/userAuthProvider';
 
 
 
@@ -10,7 +11,7 @@ const Profile = () => {
 
 
 
-
+    let {currentUser}:any = UserAuthFinal()
 
 
     return (
@@ -37,13 +38,14 @@ const Profile = () => {
                     <p className='text-xl font-semibold '>User Details</p>
                     <div className='mt-6 grid grid-cols-2 gap-3 w-3/4'>
                         <p>First Name</p>
-                        <p>Bunsukh</p>
-                        <p>Last Name</p>
-                        <p>Fangudu</p>
+                        <p>{currentUser?.name}</p>
+                        
+                        {/* <p>Last Name</p>
+                        <p>Fangudu</p> */}
                         <p>Email</p>
-                        <p>Bunsukh@gmail.com</p>
-                        <p>Mobile</p>
-                        <p>+918738478374</p>
+                        <p>{currentUser?.email}</p>
+                        {/* <p>Mobile</p>
+                        <p>+918738478374</p> */}
                     </div>
                 </div>
             </section>

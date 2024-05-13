@@ -14,6 +14,7 @@ import CountdownTimer from '../../../components/utils/TimerComponent'
 import { Modal } from 'antd'
 import { RxEnterFullScreen } from 'react-icons/rx'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
+import { UserAuthFinal } from '@/features/contextApi/userAuthProvider'
 
 
 let demo: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
@@ -27,6 +28,7 @@ const Home: NextPage = () => {
     let { height } = useWindowDimensions();
 
     const params = useParams();
+    const {currentUser}:any  = UserAuthFinal()
 
 
     const [bundleDetails, setBundleDetails] = useState<any>([]);
@@ -772,7 +774,7 @@ const Home: NextPage = () => {
                             <div className='h-[108px] border-y border-r px-1 flex gap-x-2 border-gray-300'>
                                 <Image src="/images/defaultAvatar.jfif" height={85} width={85} alt='user-avatar' className='shadow mt-1 bg-red-200' />
 
-                                <p className='font-semibold text-[0.9rem] mt-1'>Bunsukh Fandgudu</p>
+                                <p className='font-semibold text-[0.9rem] mt-1'>{currentUser?.name}</p>
                             </div>
                             <div className='h-[8.2rem] border-l-[2px] border-black border-t-[2px]'>
                                 <div className='grid grid-cols-2 gap-y-2.5 px-2 mt-2'>
