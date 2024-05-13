@@ -14,6 +14,8 @@ import auth from '@/features/authentication/auth';
 import { useParams, useSearchParams } from 'next/navigation';
 import { Input, notification } from 'antd';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useIsMounted } from '@/components/customhooks/useIsMounted';
 
 const Editor = dynamic(()=>import("@/components/richTextEditor/Editor").then((obj)=>obj.Editor)
 )
@@ -27,6 +29,8 @@ const AddNewQuestion = () => {
     const [categoryData, setCategoryData] = useState([]);
     const urlParams = useSearchParams();
     const  [parentId,setParentId] = useState<any>(null);
+
+    const isMounted = useIsMounted()
 
     useEffect(() => {
         async function fetchCategory() {
@@ -121,9 +125,14 @@ const AddNewQuestion = () => {
     }
 
     return (
+       isMounted()==true &&
         <section>
             <header className='h-16 w-full left-0 flex justify-between px-3 items-center right-0 top-0 shadow'>
-                <div></div>
+                <Link href="/">
+                    <div className='text-xl font-semibold '>
+                        TEST FEVER
+                    </div>
+                </Link>
                 <div>
                     <button onClick={handleAddQuestion} className='w-32 h-10 hover:bg-purple-700 bg-purple-600 text-white flex justify-center rounded items-center'><p>Save</p></button>
                 </div>
@@ -180,7 +189,7 @@ const AddNewQuestion = () => {
                                 <option key={2} value="multiple">Multiple</option>
 
                             </select>
-                        </div>:<></>
+                        </div> : <></>
                     }
                     <div className='mt-5'>
                         <div className='flex items-center gap-x-1'>
@@ -233,14 +242,14 @@ const AddNewQuestion = () => {
                 <div className='w-3/4 p-4'>
                     <div>
                         <label className='text-[0.85rem] py-2'>Title</label>
-                        <Input className='w-full my-1' value={mainDetails?.title} onChange={(e)=>setMainDetails({...mainDetails,title:e.target.value})}/>
+                        <Input className='w-full my-1' value={mainDetails?.title} onChange={(e) => setMainDetails({ ...mainDetails, title: e.target.value })} />
 
                         <label className='text-[0.85rem] py-2'>Instruction</label>
                         <Editor index={1} placeholder='Enter Here' value={mainDetails.primary_data} onChange={(e: any) => setMainDetails({ ...mainDetails, primary_data: e })} />
                         {/* <ReactQuill placeholder='Enter Here' formats={formats} modules={modules} theme="snow" value={mainDetails.primary_data} onChange={(e) => setMainDetails({ ...mainDetails, primary_data: e })} /> */}
                     </div>
                     <div>
-                        
+
                         <label className='text-[0.85rem] py-2'>Question</label>
                         <Editor index={2} placeholder='Enter your question here' value={mainDetails.question} onChange={(e: any) => setMainDetails({ ...mainDetails, question: e })} />
                     </div>
@@ -294,7 +303,7 @@ const AddNewQuestion = () => {
 
 
             </section>
-        </section>
+        </section> 
     )
 }
 

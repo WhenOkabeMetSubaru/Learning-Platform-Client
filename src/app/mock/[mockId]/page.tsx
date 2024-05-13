@@ -92,20 +92,26 @@ const Home: NextPage = () => {
                     return item?.is_submitted == false;
                 })
 
-                setCurrentSection(findCorrectSection);
-                let tempQuestion = res?.data?.questionDetails[findCorrectSection?._id][0];
-                setCurrentQuestion(tempQuestion);
+                if(!findCorrectSection){
+                    return router.push(`/mock/${params.mockId}/result`)
+                }else{
+                    setCurrentSection(findCorrectSection);
+                    let tempQuestion = res?.data?.questionDetails[findCorrectSection?._id][0];
+                    setCurrentQuestion(tempQuestion);
 
-                let inputs = tempQuestion?.options?.map((item: any, i: number) => {
-                    return {
-                        checked: tempQuestion?.user_answer == (i + 1)?.toString() ? true : false,
-                        index: item.question_no,
-                        option: item.title
-                    }
-                })
+                    let inputs = tempQuestion?.options?.map((item: any, i: number) => {
+                        return {
+                            checked: tempQuestion?.user_answer == (i + 1)?.toString() ? true : false,
+                            index: item.question_no,
+                            option: item.title
+                        }
+                    })
 
 
-                setMultipleInputs(inputs)
+                    setMultipleInputs(inputs)
+                }
+
+                
             }
 
             setLoaderBox(false);

@@ -3,7 +3,7 @@ import UserLayout from '@/app/layout/userLayout'
 import React, { useEffect, useState } from 'react'
 import { Tabs, TabsProps } from "antd"
 import { useParams } from 'next/navigation'
-import { getAllDetailsAboutMock } from '@/features/apiQueries/mockapai'
+import { getAllDetailsAboutMock, getAllDetailsAboutMockResultPage } from '@/features/apiQueries/mockapai'
 import auth from '@/features/authentication/auth'
 import { CustomCollapseCard } from '@/components/utils/extraComponent'
 import { optionNumberToChar, removeHTMLTagRegex } from '@/components/extrafunction'
@@ -23,7 +23,7 @@ const MockResult = () => {
 
 
     useEffect(() => {
-        getAllDetailsAboutMock({ mockId: params?.mockId, token: auth?.isAuthenticated() }).then((res: any) => {
+        getAllDetailsAboutMockResultPage({ mockId: params?.mockId, token: auth?.isAuthenticated() }).then((res: any) => {
             if (res.status == false) {
                 setBundleDetails(res.data?.bundleDetails);
 

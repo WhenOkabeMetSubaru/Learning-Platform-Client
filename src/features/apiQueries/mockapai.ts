@@ -173,6 +173,28 @@ export const getAllDetailsAboutMock = async ({mockId,token}:{mockId?:any,token?:
     }
 }
 
+export const getAllDetailsAboutMockResultPage = async ({ mockId, token }: { mockId?: any, token?: any }) => {
+
+    try {
+
+        let response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/mock/details/result/` + mockId, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + (auth?.isAuthenticated() || token)
+
+            }
+
+        })
+
+        return response.json()
+
+    } catch (error: any) {
+        return console.error(error.message)
+    }
+}
+
 export const updateMockBundleSubmit = async (bundleId: string,token:string) => {
     try {
 
