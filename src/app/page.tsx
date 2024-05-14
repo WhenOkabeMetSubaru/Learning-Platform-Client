@@ -8,6 +8,8 @@ import { getAllMocks, getMockAccessByUser } from '@/features/apiQueries/mockapai
 import auth from '@/features/authentication/auth'
 import { useRouter } from 'next/navigation'
 import LoadingBar from 'react-top-loading-bar'
+import Link from 'next/link'
+import { IoIosArrowRoundForward } from 'react-icons/io'
 
 
 let demo: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
@@ -32,9 +34,9 @@ const Home: NextPage = () => {
 
   const handleMockStart = async (id: string) => {
     setProgress(20);
-    let res = await getMockAccessByUser(id,auth?.isAuthenticated());
+    let res = await getMockAccessByUser(id, auth?.isAuthenticated());
     setProgress(60);
-    if(res.status==false){
+    if (res.status == false) {
       setProgress(100);
       router.push(`/mock/${res?.data?._id}`)
     }
@@ -45,36 +47,63 @@ const Home: NextPage = () => {
   return (
     <UserLayout>
       <section className=''>
-        <div className='flex gap-5 p-5'>
-          <div className='w-1/3 overflow-hidden p-3 relative shadow-lg h-[20rem] rounded bg-gradient-to-br from-lime-500 to-lime-600'>
-            <p className='text-3xl font-semibold text-white m-3'>
+        <div className='flex min-h-[20rem] gap-5 p-5'>
+          <div className='sizeTransition1 shadow overflow-hidden  relative border  rounded bg-white'>
+            <div className='text-5xl font-mono flex justify-center items-center h-[10rem] bg-gradient-to-tr from-orange-500 to-pink-600 font-semibold text-white '>
               Mocks
-            </p>
-            <div className='absolute flex flex-col shadow-lg text-white font-sans justify-center items-center w-36 h-36 rounded-full bg-lime-800 bottom-3 right-44 z-10'> 
-              <p className='text-xl text-lime-100'>Created</p>
-              <p className='text-center text-3xl'>10</p>
             </div>
-            <div className='absolute flex flex-col shadow-lg text-white font-sans justify-center items-center w-56 h-56 rounded-full bg-gradient-to-tr from-orange-600 to-orange-700 top-3 right-8'>
-              <p className='text-2xl text-lime-100'>Attempted</p>
-              <p className='text-center text-4xl'>10</p>
+            <div className='p-3 flex flex-col gap-y-6'>
+              <div className='flex p-2 bg-gray-100 rounded justify-between'>
+                <p>Attempted</p>
+                <p>2</p>
+              </div>
+              <div className='flex p-2 bg-gray-100 rounded justify-between'>
+                <p>Created</p>
+                <p>5</p>
+              </div>
             </div>
+
           </div>
-          <div className='w-1/3 overflow-hidden p-3 relative shadow-lg h-[15rem] rounded bg-gradient-to-br from-pink-700 to-pink-800'>
-            <p className='text-3xl font-semibold text-white m-3'>
+
+          <div className='sizeTransition1 shadow overflow-hidden  relative border  rounded bg-white'>
+            <div className='text-5xl font-mono flex justify-center items-center h-[10rem] bg-gradient-to-r from-lime-500 to-green-700 font-semibold text-white '>
               Questions
-            </p>
-            <div className='absolute flex flex-col shadow-lg text-white font-sans justify-center items-center w-32 h-32 rounded-full bg-blue-400 bottom-3 right-44 z-10'>
-              <p className='text-xl text-lime-100'>Created</p>
-              <p className='text-center text-3xl'>20</p>
             </div>
-            <div className='absolute flex flex-col shadow-lg text-white font-sans justify-center items-center w-44 h-44 rounded-full bg-gradient-to-tr from-orange-400 to-orange-600 top-3 right-8'>
-              <p className='text-2xl text-lime-100'>Attempted</p>
-              <p className='text-center text-4xl'>30</p>
+            <div className='p-3 flex flex-col gap-y-6'>
+              <div className='flex p-2 bg-gray-100 rounded justify-between'>
+                <p>Attempted</p>
+                <p>3</p>
+              </div>
+              <div className='flex p-2 bg-gray-100 rounded justify-between'>
+                <p>Created</p>
+                <p>6</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div className='flex flex-col gap-y-2'>
+            <div className='h-[4.5rem] p-4 bg-white rounded border w-[15rem]'>
+              <Link href="/user/profile/mocks/created/add">
+                <div className='w-full h-full rounded gap-x-3 bg-purple-700 text-white flex justify-between px-3 items-center'>
+                  <p>Add New Mock</p>
+                  <IoIosArrowRoundForward className='animate-pulse delay-500' size={25}/>
+                </div>
+              </Link>
+            </div>
+            <div className='h-[4.5rem] p-4 bg-white rounded border w-[15rem]'>
+              <Link href="/user/profile/questions/created/add">
+                <div className='w-full h-full rounded gap-x-3 px-3 bg-purple-700 text-white flex justify-between items-center'>
+                  <p>Add New Question</p>
+                  <IoIosArrowRoundForward className='animate-pulse delay-500' size={25} />
+                </div>
+              </Link>
             </div>
           </div>
+
         </div>
 
-    </section>
+      </section>
     </UserLayout >
 
   )

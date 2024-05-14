@@ -35,6 +35,7 @@ const AddNewMock = () => {
 
             if (data.status == true) {
                 let finalData = await addNewMockByUser({ title: "Mock1", total_questions: 66, mock_type: "paper" });
+                console.log(finalData)
                 if (finalData.status == false) {
                     setMockDetails(finalData?.data);
                     setMockTimeStatus(finalData?.data?.is_sectional_locked)
@@ -135,7 +136,7 @@ const AddNewMock = () => {
         <section>
             <header className='h-16 w-full left-0 flex justify-between px-3 items-center right-0 top-0 shadow'>
                 <div>
-                    <Link href={"/"}><div className='w-40 h-10 rounded bg-red-200 cursor-pointer' /></Link>
+                    <Link href={"/"}><div className='w-40 rounded text-2xl font-semibold' />TEST FEVER</Link>
                 </div>
                 <div className='flex gap-x-4'>
                     <div className='gap-x-2 items-center flex'>
