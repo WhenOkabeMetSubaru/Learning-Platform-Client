@@ -6,7 +6,8 @@ import { Form, Input, Modal, notification, Select, Switch } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { FaLock } from 'react-icons/fa'
+import { FaChevronDown, FaLock } from 'react-icons/fa'
+import { MdDelete } from 'react-icons/md'
 
 const AddNewMock = () => {
 
@@ -250,9 +251,12 @@ const AddNewMock = () => {
                     <Form.Item name="description" >
                         <Input.TextArea rows={5} className='rounded-sm' placeholder='Enter Description' />
                     </Form.Item>
-                    <div className='w-full mt-3'>
+                    <div className='w-full flex flex-col gap-y-2 mt-3'>
                         <button className='w-full h-9 font-semibold text-white bg-purple-600 hover:bg-purple-700 rounded shadow flex justify-center items-center'>
                             <p>Save</p>
+                        </button>
+                        <button className='w-full h-9 font-semibold text-white bg-red-600 hover:bg-red-700 rounded shadow flex justify-center items-center'>
+                            <MdDelete size={25}/>
                         </button>
                     </div>
                 </Form>
@@ -283,7 +287,7 @@ const SectionBlockUI = ({ total_questions = 0, section_name,cb1, questions, func
     return (
         <section  className={`bg-gray-100 cursor-pointer overflow-hidden rounded-xl w-full ${open == true ? 'h-auto' : 'h-12'} duration-500`}>
             <div className='w-full h-10 rounded-xl text-[0.9rem] flex px-3 justify-between items-center'>
-                <div onClick={() => setOpen(!open)} className='flex gap-x-2'><p>v</p><p>{section_name}</p></div>
+                <div className='flex items-center gap-x-2'><FaChevronDown onClick={() => setOpen(!open)} className={`mt-1 duration-300 ${open==true?'rotate-180 ':''}`}/><p>{section_name}</p></div>
                 <div className='flex items-center gap-x-3'>
                     <button onClick={cb1} className='w-24 h-8 mt-2 hover:bg-indigo-700 bg-indigo-600 text-white flex justify-center rounded items-center'><p>Edit</p></button>
                     <p>{total_questions} Questions</p>

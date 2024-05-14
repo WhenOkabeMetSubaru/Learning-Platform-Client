@@ -65,6 +65,28 @@ export const getAllMocksByUser = async () => {
     }
 }
 
+export const getAllAttemptedMocksByUser = async () => {
+
+    try {
+
+        let response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/mock/attempted/user`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + auth.isAuthenticated()
+
+            }
+
+        })
+
+        return response.json()
+
+    } catch (error: any) {
+        return console.error(error.message)
+    }
+}
+
 export const getMockByID = async (id: string) => {
 
     try {
@@ -233,11 +255,11 @@ export const updateMockBundleNextStatus = async (bundleId: string, token: string
     }
 }
 
-export const getAllMocksByPageAndFilter = async ({pageSize,pageNumber}:{pageSize?:number,pageNumber?:number}) => {
+export const getAllMocksByPageAndFilter = async ({pageSize=5,pageNumber=1}:{pageSize?:number,pageNumber?:number}) => {
 
     try {
 
-        let response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/mock/pagination/all` , {
+        let response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/mock/pagination/all?pageSize=${pageSize}&pageNumber=${pageNumber}` , {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -249,6 +271,26 @@ export const getAllMocksByPageAndFilter = async ({pageSize,pageNumber}:{pageSize
         })
 
         return response.json()
+
+    } catch (error: any) {
+        return console.error(error.message)
+    }
+}
+
+
+export const deleteAttemptedMockByUser = async (mockId: string) => {
+    try {
+
+        let response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/mock/details/delete/${mockId}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + auth.isAuthenticated()
+            }
+        })
+
+        return await response.json();
 
     } catch (error: any) {
         return console.error(error.message)

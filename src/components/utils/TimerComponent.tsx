@@ -6,7 +6,7 @@ const bundleDetails = [
     {time:20}
 ]
 
-function CountdownTimer ({ initialDate,multipleTimer,setMultipleTimer,func }:{initialDate:any,multipleTimer:any,setMultipleTimer:any,func:any})
+function CountdownTimer ({ initialDate,multipleTimer,setMultipleTimer,func,clearTimerFunc }:{clearTimerFunc?:any, initialDate:any,multipleTimer:any,setMultipleTimer:any,func:any})
 {
     // stop it when needed
     const Ref = useRef<any>(null);
@@ -108,6 +108,12 @@ function CountdownTimer ({ initialDate,multipleTimer,setMultipleTimer,func }:{in
     useEffect(() => {
         clearTimer(initialDate, () => { let temp = [...multipleTimer];
         setMultipleTimer(temp); func()});
+
+        return ()=>{
+            clearInterval(Ref.current)
+            Ref.current = null;
+        }
+
     }, []);
 
     // Another way to call the clearTimer() to start

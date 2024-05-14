@@ -100,11 +100,22 @@ const MockAll: NextPage = () => {
                                 return (
                                     /* eslint-disable-line */
                                     <div key={item?._id} className='w-1/2 rounded-lg h-44 border relative cursor-pointer shadow p-3'>
-                                        <p className='font-semibold'>{item?.title}</p>
-                                        <p className='mt-2 text-xs text-gray-400'>{item?.description}</p>
+
+                                        <div className='flex gap-x-2'>
+                                            <div className='w-12 h-12 flex justify-center items-center font-sans text-xl shadow text-white rounded-full bg-gradient-to-r from-orange-400 via-orange-600 to-orange-500'>
+                                                <p>M</p>
+                                            </div>
+                                            <div className='flex flex-col'>
+                                                <p className='font-semibold'>{item?.title}</p>
+                                                <p className='text-xs text-gray-400'>{item?.description}</p>
+                                            </div>
+                                        </div>
                                         <button onClick={() => { handleMockStart(item?._id); }} className='absolute right-5 bottom-4 hover:bg-white hover:border hover:text-blue-500 hover:border-blue-500 duration-300 w-24 h-8 rounded bg-blue-600 text-white flex justify-center items-center'>
                                             <p>Start</p>
                                         </button>
+                                        <div className='absolute right-2 top-3 p-2'>
+                                            {item?.difficulty}
+                                        </div>
                                     </div>
                                 )
                             })

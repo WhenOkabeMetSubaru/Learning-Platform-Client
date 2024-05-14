@@ -334,42 +334,7 @@ const Home: NextPage = () => {
     const handleChangeSection = async () => {
 
 
-        // let length = bundleDetails?.length;
-        // let x = 0;
-        // while (x < length) {
-        //     let currentTime = new Date();
-        //     let start = multipleTimer[x]?.start_time;
-        //     let end = multipleTimer[x]?.end_time;
-        //     if (start < currentTime && end < currentTime) {
-        //         x++
-        //     } else if (start <= currentTime && end > currentTime) {
-        //         break;
-        //     }
-
-        // }
-
-
-
-        // if (x >= length) {
-        //     console.log("last Section ", bundleDetails[x - 1])
-        //     console.log("Last Section")
-        // } else {
-        //     console.log("Current Section ", x, " ", bundleDetails[x - 1], bundleDetails[x], bundleDetails)
-        //     setCurrentSection(bundleDetails[x]);
-        //     let tempQuestion = questionDetails[bundleDetails[x]?._id][0];
-        //     setCurrentQuestion(tempQuestion);
-
-        //     let inputs = tempQuestion?.options?.map((item: any, i: number) => {
-        //         return {
-        //             checked: tempQuestion?.user_answer == (i + 1)?.toString() ? true : false,
-        //             index: item.question_no,
-        //             option: item.title
-        //         }
-        //     })
-
-
-        //     setMultipleInputs(inputs)
-        // }
+        
         let latestCurrentSection = bundldeDetailsRef?.current?.find((item: any) => {
             return item?.is_submitted == false
         })
@@ -435,7 +400,7 @@ const Home: NextPage = () => {
 
                 setCurrentSection(findCorrectSection);
 
-                console.log(copySections, findCorrectSection)
+              
 
                 let tempTimer = copySections?.map((item: any) => {
 
