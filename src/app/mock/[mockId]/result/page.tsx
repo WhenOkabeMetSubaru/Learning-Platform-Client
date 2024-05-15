@@ -40,7 +40,7 @@ const MockResult = () => {
                 let inputs = tempQuestion?.options?.map((item: any, i: number) => {
                     return {
                         checked: tempQuestion?.user_answer == (i + 1)?.toString() ? true : false,
-                        index: item.question_no,
+                        index: item.option_no,
                         option: item.title
                     }
                 })
@@ -79,8 +79,8 @@ const MockResult = () => {
                                     currentQuestion?.options?.map((option:any,idx:number)=>{
                                         return (
                                             <div key={"opT" +idx } className='min-h-[8vh]  p-1 leading-6 border relative border-gray-400 w-full rounded flex items-center  px-2'>
-                                                <div className='w-7 h-7 absolute left-2 top-[25%] rounded-full bg-gray-500 text-white flex justify-center items-center'>
-                                                    {optionNumberToChar[option?.question_no]}
+                                                <div className={`w-7 h-7 absolute left-2 top-[25%] rounded-full bg-gray-500 text-white flex justify-center items-center`}>
+                                                    {optionNumberToChar[option?.option_no]}
                                                 </div>
                                                 <div className='pl-10'><FilterHtml htmlContent={option?.title}/></div>
                                             </div>
@@ -89,6 +89,14 @@ const MockResult = () => {
                                 }
                             </div>
                            
+                        </div>
+                        <div className='mt-2 mx-4  min-h-[15rem] rounded-t relative shadow-t '>
+                            <div className='h-14 my-5 px-5 text-[0.9rem] font-serif bg-sky-600 text-white flex items-center'>
+                                <p>Solution</p>
+                            </div>
+                            <div className='px-5 text-[#8b8b8b] font-extralight text-[1rem]'>
+                                <FilterHtml htmlContent={currentQuestion?.answer_explanation} />
+                            </div>
                         </div>
                     </div>
                     <div className='w-1/3 min-h-[100vh] '>

@@ -20,6 +20,10 @@ const Home: NextPage = () => {
   const [mockDetails, setMockDetails] = useState([]);
   const router = useRouter();
 
+  const symbols = ['Mocks', 'Attempted 5', 'Created 6'];
+  const questionText = ['Questions','Attempted 5','Created 7']
+  let count = 0
+
   useEffect(() => {
 
 
@@ -29,6 +33,22 @@ const Home: NextPage = () => {
       }
 
     })
+
+    
+    // let mockCardInterval = setInterval(() => {
+    //   count = (count + 1) % symbols.length
+    //   document!.getElementById("mockCard1")!.innerHTML = symbols[count];
+      
+    // }, 10000)
+
+    // let questionCardInterval = setInterval(() => {
+    //   document!.getElementById("questionCard1")!.innerHTML = questionText[count];
+    // }, 10000)
+
+    // return ()=>{
+    //   clearInterval(mockCardInterval);
+    //   clearInterval(questionCardInterval)
+    // }
 
   }, [])
 
@@ -47,12 +67,12 @@ const Home: NextPage = () => {
   return (
     <UserLayout>
       <section className=''>
-        <div className='flex min-h-[20rem] gap-5 p-5'>
-          <div className='sizeTransition1 shadow overflow-hidden  relative border  rounded bg-white'>
-            <div className='text-5xl font-mono flex justify-center items-center h-[10rem] bg-gradient-to-tr from-orange-500 to-pink-600 font-semibold text-white '>
+        <div className='flex  gap-5 p-5'>
+          <div className='shadow w-[20rem] overflow-hidden  relative border  rounded bg-white'>
+            <div id="mockCard1" className='text-4xl duration-500 font-mono flex justify-center items-center h-[10rem] bg-gradient-to-tr from-orange-500 to-pink-600 font-semibold text-white '>
               Mocks
             </div>
-            <div className='p-3 flex flex-col gap-y-6'>
+            {/* <div className='p-3 flex flex-col gap-y-6'>
               <div className='flex p-2 bg-gray-100 rounded justify-between'>
                 <p>Attempted</p>
                 <p>2</p>
@@ -61,15 +81,15 @@ const Home: NextPage = () => {
                 <p>Created</p>
                 <p>5</p>
               </div>
-            </div>
+            </div> */}
 
           </div>
 
-          <div className='sizeTransition1 shadow overflow-hidden  relative border  rounded bg-white'>
-            <div className='text-5xl font-mono flex justify-center items-center h-[10rem] bg-gradient-to-r from-lime-500 to-green-700 font-semibold text-white '>
+          <div className='shadow w-[20rem] overflow-hidden  relative border  rounded bg-white'>
+            <div id="questionCard1" className='text-4xl font-mono flex justify-center items-center h-[10rem] bg-gradient-to-r from-lime-500 to-green-700 font-semibold text-white '>
               Questions
             </div>
-            <div className='p-3 flex flex-col gap-y-6'>
+            {/* <div className='p-3 flex flex-col gap-y-6'>
               <div className='flex p-2 bg-gray-100 rounded justify-between'>
                 <p>Attempted</p>
                 <p>3</p>
@@ -78,7 +98,7 @@ const Home: NextPage = () => {
                 <p>Created</p>
                 <p>6</p>
               </div>
-            </div>
+            </div> */}
 
           </div>
 

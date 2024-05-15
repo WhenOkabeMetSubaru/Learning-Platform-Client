@@ -195,6 +195,28 @@ export const getAllDetailsAboutMock = async ({mockId,token}:{mockId?:any,token?:
     }
 }
 
+export const getLatestBundlesDataByMockUser= async ({ mockId}: { mockId?: any, token?: any }) => {
+
+    try {
+
+        let response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/mock/${mockId}/latest/bundles` , {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + (auth?.isAuthenticated() )
+
+            }
+
+        })
+
+        return response.json()
+
+    } catch (error: any) {
+        return console.error(error.message)
+    }
+}
+
 export const getAllDetailsAboutMockResultPage = async ({ mockId, token }: { mockId?: any, token?: any }) => {
 
     try {

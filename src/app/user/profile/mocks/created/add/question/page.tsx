@@ -125,7 +125,7 @@ const AddNewQuestionMultiple = () => {
 
         let finalOptions = options?.select_options?.map((itr) => {
             return {
-                question_no: itr.no,
+                option_no: itr.no,
                 title: itr.option
             }
         })

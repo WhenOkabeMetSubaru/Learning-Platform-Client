@@ -34,7 +34,7 @@ const QuestionsView = () => {
                 let inputs = res?.data[0]?.options?.map((item: any, i: number) => {
                     return {
                         checked: res?.data[0]?.user_answer == (i + 1)?.toString() ? true : false,
-                        index: item.question_no,
+                        index: item.option_no,
                         option: item.title
                     }
                 })
@@ -50,7 +50,7 @@ const QuestionsView = () => {
         let inputs = tempQuestion?.options?.map((item: any, i: number) => {
             return {
                 checked: mode == 'default' ? (tempQuestion?.user_answer == (i + 1)?.toString() ? true : false) : false,
-                index: item.question_no,
+                index: item.option_no,
                 option: item.title
             }
         })

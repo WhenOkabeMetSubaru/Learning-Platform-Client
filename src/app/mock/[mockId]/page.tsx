@@ -2,7 +2,7 @@
 import useWindowDimensions from '@/components/customhooks/useDimensionHook'
 import { handleAnswerToColor, questionStatus } from '@/components/extrafunction'
 import FilterHtml from '@/components/unknownHtml'
-import { getAllDetailsAboutMock, updateMockBundleNextStatus, updateMockBundleSubmit } from '@/features/apiQueries/mockapai'
+import { getAllDetailsAboutMock, getLatestBundlesDataByMockUser, updateMockBundleNextStatus, updateMockBundleSubmit } from '@/features/apiQueries/mockapai'
 import { updateQuestionStatusForMock } from '@/features/apiQueries/questionapi'
 import auth from '@/features/authentication/auth'
 import type { NextPage } from 'next'
@@ -102,7 +102,7 @@ const Home: NextPage = () => {
                     let inputs = tempQuestion?.options?.map((item: any, i: number) => {
                         return {
                             checked: tempQuestion?.user_answer == (i + 1)?.toString() ? true : false,
-                            index: item.question_no,
+                            index: item.option_no,
                             option: item.title
                         }
                     })
@@ -294,7 +294,7 @@ const Home: NextPage = () => {
         let inputs = tempQuestion?.options?.map((item: any, i: number) => {
             return {
                 checked: mode == 'default' ? (tempQuestion?.user_answer == (i + 1)?.toString() ? true : false) : false,
-                index: item.question_no,
+                index: item.option_no,
                 option: item.title
             }
         })
@@ -334,8 +334,10 @@ const Home: NextPage = () => {
     const handleChangeSection = async () => {
 
 
-        
-        let latestCurrentSection = bundldeDetailsRef?.current?.find((item: any) => {
+        let bundleResponse = await getLatestBundlesDataByMockUser({mockId:params.mockId})
+        let latestBundleData = bundleResponse?.status==false?bundleResponse?.data:bundldeDetailsRef?.current;
+
+        let latestCurrentSection = latestBundleData?.find((item: any) => {
             return item?.is_submitted == false
         })
 
@@ -361,8 +363,9 @@ const Home: NextPage = () => {
             }
 
 
-
-            let copySections = [...bundleDetails];
+            bundleResponse = await getLatestBundlesDataByMockUser({ mockId: params.mockId })
+            latestBundleData = bundleResponse?.status == false ? bundleResponse?.data : bundldeDetailsRef?.current;
+            let copySections = [...latestBundleData];
             copySections[i] = res?.data;
 
 
@@ -442,7 +445,7 @@ const Home: NextPage = () => {
                 let inputs = tempQuestion?.options?.map((item: any, i: number) => {
                     return {
                         checked: tempQuestion?.user_answer == (i + 1)?.toString() ? true : false,
-                        index: item.question_no,
+                        index: item.option_no,
                         option: item.title
                     }
                 })
@@ -489,6 +492,27 @@ const Home: NextPage = () => {
 
             let tempSection = [...bundleDetails];
             tempSection[i] = res?.data;
+
+            let tempTimer:any = tempSection?.map((item: any,count:number) => {
+
+                let timer1 = new Date(item?.section_start_time);
+                let timer2 = new Date(item?.section_end_time)
+
+                return {
+                    start_time: count<=i?null:timer1,
+                    end_time: count<=i?null:timer2
+                }
+            })
+
+           tempTimer[i].start_time = "";
+           tempTimer[i].end_time = "";
+          
+
+            setMultipleTimer(tempTimer);
+            timerRef.current = tempTimer;
+
+          
+
             setBundleDetails(tempSection);
 
             setLoaderBox(false);
@@ -504,9 +528,13 @@ const Home: NextPage = () => {
     const handleNextSection = async () => {
 
 
-        let copySections = [...bundldeDetailsRef?.current];
+        let latestBundlesData = await getLatestBundlesDataByMockUser({mockId:params.mockId})
+        let copySections = latestBundlesData?.status==false?latestBundlesData?.data : bundldeDetailsRef?.current;
 
-        let latestPendingSection = copySections?.find((item: any) => item.is_submitted == false);
+        let latestPendingSection = copySections?.find((item: any) => {
+            return item?.is_submitted == false
+        });
+        console.log(copySections,latestPendingSection)
 
         let nextBundleResponse = await updateMockBundleNextStatus(latestPendingSection._id, auth?.isAuthenticated());
 
@@ -535,17 +563,19 @@ const Home: NextPage = () => {
 
 
 
-            let tempTimer = copySections?.map((item: any) => {
+            let tempTimer:any = copySections?.map((item: any,count:number) => {
 
                 let timer1 = new Date(item?.section_start_time);
                 let timer2 = new Date(item?.section_end_time)
 
                 return {
-                    start_time: timer1,
-                    end_time: timer2
+                    start_time:count<flagIndex?null: timer1,
+                    end_time:count<flagIndex?null: timer2
                 }
             })
 
+
+            
 
             setMultipleTimer(tempTimer);
             timerRef.current = tempTimer;
@@ -575,7 +605,7 @@ const Home: NextPage = () => {
             let inputs = tempQuestion?.options?.map((item: any, i: number) => {
                 return {
                     checked: tempQuestion?.user_answer == (i + 1)?.toString() ? true : false,
-                    index: item.question_no,
+                    index: item.option_no,
                     option: item.title
                 }
             })
@@ -625,8 +655,8 @@ const Home: NextPage = () => {
                                 {
                                     multipleTimer?.map((timerItem: any, i: any) => {
                                         let currentTime = new Date();
-
-                                        return (timerItem?.start_time <= currentTime) && (currentTime <= timerItem?.end_time) && <CountdownTimer func={handleChangeSection} setMultipleTimer={setMultipleTimer} multipleTimer={multipleTimer} key={i} initialDate={timerItem?.end_time} />
+                                        
+                                        return  (timerItem?.start_time <= currentTime) && (currentTime <= timerItem?.end_time) && <CountdownTimer func={handleChangeSection} setMultipleTimer={setMultipleTimer} multipleTimer={multipleTimer} key={i} initialDate={timerItem?.end_time} />
                                     })
                                 }
                             </div>

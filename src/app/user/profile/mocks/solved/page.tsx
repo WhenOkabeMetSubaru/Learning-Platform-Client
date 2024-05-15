@@ -6,13 +6,15 @@ import { useRouter } from 'next/navigation'
 import { deleteAttemptedMockByUser, getAllAttemptedMocksByUser } from '@/features/apiQueries/mockapai'
 import { AiFillDelete } from 'react-icons/ai'
 import { Modal } from 'antd'
+import Link from 'next/link'
+import { FaEye } from 'react-icons/fa'
 
 const SolvedMocks = () => {
 
   const router = useRouter();
 
   const [mockDetails, setMockDetails] = useState([]);
-  const [showConfirm, setShowConfirm] = useState({show:false,id:""})
+  const [showConfirm, setShowConfirm] = useState({ show: false, id: "" })
 
   useEffect(() => {
 
@@ -23,19 +25,19 @@ const SolvedMocks = () => {
     })
   }, [])
 
-  const handleDeleteMock = async ()=>{
-    
+  const handleDeleteMock = async () => {
+
     console.log(showConfirm)
     let res = await deleteAttemptedMockByUser(showConfirm?.id);
 
-    if(res.status==false){
+    if (res.status == false) {
       getAllAttemptedMocksByUser().then((res) => {
         if (res.status == false) {
           setMockDetails(res?.data)
         }
       })
     }
-    setShowConfirm({id:"",show:false})
+    setShowConfirm({ id: "", show: false })
   }
 
   return (
@@ -75,24 +77,33 @@ const SolvedMocks = () => {
             {
               mockDetails?.map((mock: any, idx: number) => {
                 return <div key={mock?._id} className='h-28 p-5 w-3/4 cursor-pointer relative bg-white rounded border shadow'>
-                  <p className='text-lg font-semibold'>Mock Test {idx + 1}</p>
-                  <AiFillDelete onClick={()=>setShowConfirm({id:mock?._id,show:true})} color='red' size={22} className='absolute right-5 top-5 cursor-pointer' />
+                  <p className='text-lg font-semibold'>{mock?.title}</p>
+                  <div className='flex gap-x-2 absolute right-5 top-6'>
+                    < Link href={`/mock/${mock?._id}/result`}>
+                      <FaEye size={25} />
+                    </Link>
+                    <AiFillDelete onClick={() => setShowConfirm({ id: mock?._id, show: true })} color='red' size={22} className=' cursor-pointer' />
+
+                  </div>
+
+
                 </div>
               })
+
 
             }
           </div>
 
         </div>
       </section>
-      <Modal open={showConfirm.show} onCancel={() => setShowConfirm({...showConfirm,show:false})} title={"Are you Sure?"} footer="">
+      <Modal open={showConfirm.show} onCancel={() => setShowConfirm({ ...showConfirm, show: false })} title={"Are you Sure?"} footer="">
         <div className=''>
           <p className='mt-3'>Deleting the mock would delete any necessary information related to it. Are you sure you want to delete it?</p>
           <div className='flex justify-end gap-x-3 mt-5'>
             <button onClick={handleDeleteMock} className='w-20 h-8 text-white flex justify-center items-center rounded bg-red-700'>
               <p>Delete</p>
             </button>
-            <button onClick={()=>setShowConfirm({id:"",show:false})} className='w-20 h-8 bg-white border-red-500 border flex justify-center items-center rounded text-black'>
+            <button onClick={() => setShowConfirm({ id: "", show: false })} className='w-20 h-8 bg-white border-red-500 border flex justify-center items-center rounded text-black'>
               <p>Cancel</p>
             </button>
           </div>
