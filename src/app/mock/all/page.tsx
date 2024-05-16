@@ -43,8 +43,13 @@ const MockAll: NextPage = () => {
         let res = await getMockAccessByUser(id, auth?.isAuthenticated());
         setProgress(60)
         if (res.status == false) {
-            setProgress(100)
-            router.push(`/mock/${res?.data?._id}`)
+            setProgress(100);
+            if(res?.data?.is_mock_completed_by_user==true){
+               return router.push(`/mock/${res?.data?._id}/result`)
+            }
+            else{
+              return  router.push(`/mock/${res?.data?._id}`)
+            }
         }
     }
 

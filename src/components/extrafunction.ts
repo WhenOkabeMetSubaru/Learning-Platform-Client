@@ -1,3 +1,4 @@
+"use client"
 export const questionStatus = ['not_visited', 'not_answered', 'answered', 'reviewed_not_answered', 'reviewed_and_answered'];
 
 let answerColorObj: any = {

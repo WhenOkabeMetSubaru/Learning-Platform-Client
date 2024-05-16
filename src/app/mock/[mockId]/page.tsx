@@ -44,7 +44,14 @@ const Home: NextPage = () => {
 
     const [submitBox, setSubmitBox] = useState(false);
     const [loaderBox, setLoaderBox] = useState(false);
-    const [nextSectionBox, setNextSectionBox] = useState(false)
+    const [nextSectionBox, setNextSectionBox] = useState(false);
+    const [answerCategory,setAnswerCategory] = useState<any>({
+        'answered':0,
+        'not_answered':0,
+        'not_visited':0,
+        'reviewed_not_answered':0,
+        'reviewed_and_answered':0
+    })
 
 
     useEffect(() => {
@@ -52,12 +59,10 @@ const Home: NextPage = () => {
         getAllDetailsAboutMock({ mockId: params?.mockId, token: auth?.isAuthenticated() }).then((res: any) => {
             if (res.status == false) {
                 setBundleDetails(res.data?.bundleDetails);
-                bundldeDetailsRef.current = res?.data?.bundleDetails;
-
                 let bundleTemp = res?.data?.bundleDetails;
 
                 let tempTimer = bundleTemp?.map((item: any) => {
-
+                 
                     let timer1 = new Date(item?.section_start_time);
                     let timer2 = new Date(item?.section_end_time)
 
@@ -67,21 +72,24 @@ const Home: NextPage = () => {
                     }
                 })
 
+                bundldeDetailsRef.current = res?.data?.bundleDetails;
+
+               
                 setMultipleTimer(tempTimer);
                 tempTimer.ref = tempTimer;
 
-                let x = 0;
-                while (x < length) {
-                    let currentTime = new Date();
-                    let start = tempTimer[x]?.start_time;
-                    let end = tempTimer[x]?.end_time;
-                    if (start < currentTime && end < currentTime) {
-                        x++
-                    } else if (start <= currentTime && end > currentTime) {
-                        break;
-                    }
+                // let x = 0;
+                // while (x < length) {
+                //     let currentTime = new Date();
+                //     let start = tempTimer[x]?.start_time;
+                //     let end = tempTimer[x]?.end_time;
+                //     if (start < currentTime && end < currentTime) {
+                //         x++
+                //     } else if (start <= currentTime && end > currentTime) {
+                //         break;
+                //     }
 
-                }
+                // }
 
 
 
@@ -97,6 +105,22 @@ const Home: NextPage = () => {
                 }else{
                     setCurrentSection(findCorrectSection);
                     let tempQuestion = res?.data?.questionDetails[findCorrectSection?._id][0];
+                    let questionPerSection  = res?.data?.questionDetails[findCorrectSection?._id];
+
+                    let seperateCategory:any = {
+                        'answered': 0,
+                        'not_answered': 0,
+                        'not_visited': 0,
+                        'reviewed_not_answered': 0,
+                        'reviewed_and_answered': 0
+                    };
+
+                    for(let i = 0;i<questionPerSection?.length;i++){
+                        seperateCategory[questionPerSection[i].question_status] += 1;
+                    }
+
+                    setAnswerCategory(seperateCategory);
+
                     setCurrentQuestion(tempQuestion);
 
                     let inputs = tempQuestion?.options?.map((item: any, i: number) => {
@@ -158,6 +182,24 @@ const Home: NextPage = () => {
             setCurrentQuestion(response?.data);
             let temp = { ...questionDetails };
             temp[currentSection?._id][index] = response.data;
+
+            //category update
+            let questionPerSection = temp[currentSection?._id];
+
+            let seperateCategory: any = {
+                'answered': 0,
+                'not_answered': 0,
+                'not_visited': 0,
+                'reviewed_not_answered': 0,
+                'reviewed_and_answered': 0
+            };
+
+            for (let i = 0; i < questionPerSection?.length; i++) {
+                seperateCategory[questionPerSection[i].question_status] += 1;
+            }
+
+            setAnswerCategory(seperateCategory);
+
             setQuestionDetails(temp)
             let tmp = handleGetInputData(response.data);
             setMultipleInputs(tmp);
@@ -202,6 +244,23 @@ const Home: NextPage = () => {
             setCurrentQuestion(response?.data);
             let temp = { ...questionDetails };
             temp[currentSection?._id][i] = response.data;
+
+            let questionPerSection = temp[currentSection?._id];
+
+            let seperateCategory: any = {
+                'answered': 0,
+                'not_answered': 0,
+                'not_visited': 0,
+                'reviewed_not_answered': 0,
+                'reviewed_and_answered': 0
+            };
+
+            for (let i = 0; i < questionPerSection?.length; i++) {
+                seperateCategory[questionPerSection[i].question_status] += 1;
+            }
+
+            setAnswerCategory(seperateCategory);
+
             setQuestionDetails(temp)
             if (i + 1 !== tempArr?.length) {
                 setCurrentQuestion(tempArr[i + 1])
@@ -253,6 +312,23 @@ const Home: NextPage = () => {
             setCurrentQuestion(response?.data);
             let temp = { ...questionDetails };
             temp[currentSection?._id][i] = response.data;
+
+            let questionPerSection = temp[currentSection?._id];
+
+            let seperateCategory: any = {
+                'answered': 0,
+                'not_answered': 0,
+                'not_visited': 0,
+                'reviewed_not_answered': 0,
+                'reviewed_and_answered': 0
+            };
+
+            for (let i = 0; i < questionPerSection?.length; i++) {
+                seperateCategory[questionPerSection[i].question_status] += 1;
+            }
+
+            setAnswerCategory(seperateCategory);
+
             setQuestionDetails(temp)
             if (i + 1 !== tempArr?.length) {
                 setCurrentQuestion(tempArr[i + 1])
@@ -655,7 +731,7 @@ const Home: NextPage = () => {
                                 {
                                     multipleTimer?.map((timerItem: any, i: any) => {
                                         let currentTime = new Date();
-                                        
+                                        console.log(i + " start-time "+ timerItem?.start_time + " current " + currentTime + " end-time " + timerItem?.end_time )
                                         return  (timerItem?.start_time <= currentTime) && (currentTime <= timerItem?.end_time) && <CountdownTimer func={handleChangeSection} setMultipleTimer={setMultipleTimer} multipleTimer={multipleTimer} key={i} initialDate={timerItem?.end_time} />
                                     })
                                 }
@@ -781,13 +857,13 @@ const Home: NextPage = () => {
                                 <div className='grid grid-cols-2 gap-y-2.5 px-2 mt-2'>
                                     <div className='flex gap-x-2 '>
                                         <div className='spritegreen1 w-8 h-8 flex justify-center items-center text-[0.8rem]   text-white'>
-                                            <p>0</p>
+                                            <p>{answerCategory['answered']}</p>
                                         </div>
                                         <p className='text-[0.72rem]'>Answered</p>
                                     </div>
                                     <div className='flex gap-x-2 '>
                                         <div className='spirtered1 w-8 h-8  flex justify-center items-center text-[0.8rem]  text-white'>
-                                            <p>0</p>
+                                            <p>{answerCategory['not_answered']}</p>
                                         </div>
                                         <p className='text-[0.72rem]'>Not Answered</p>
                                     </div>
@@ -796,13 +872,13 @@ const Home: NextPage = () => {
 
                                     <div className='flex gap-x-2 '>
                                         <div className='spritegrey1 w-8 h-8  flex justify-center items-center text-[0.8rem] text-black '>
-                                            <p>0</p>
+                                            <p>{answerCategory['not_visited']}</p>
                                         </div>
                                         <p className='text-[0.72rem]'>Not Visited</p>
                                     </div>
                                     <div className='flex gap-x-2 '>
                                         <div className='spritepurple1  flex justify-center items-center text-[0.8rem] text-white'>
-                                            <p>0</p>
+                                            <p>{answerCategory['reviewed_not_answered']}</p>
                                         </div>
                                         <p className='text-[0.72rem]'>Marked For Review</p>
                                     </div>
@@ -810,7 +886,7 @@ const Home: NextPage = () => {
                                 </div>
                                 <div className='flex gap-x-2 px-2 mt-2'>
                                     <div className='spritepurpletick1 flex justify-center items-center text-[0.8rem]  text-white'>
-                                        <p>0</p>
+                                        <p>{answerCategory['reviewed_and_answered']}</p>
                                     </div>
                                     <p className='text-[0.72rem]'>Answered & Marked For Review</p>
                                 </div>
