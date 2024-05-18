@@ -12,7 +12,7 @@ export const checkCorrectAnswer = ({user_answer,correct_answer}:{user_answer:str
     return false;
 }
 
-export const CustomCollapseCard = ({questionDetails,bundleDetails,setCurrentQuestion }:{questionDetails:any,bundleDetails:any,setCurrentQuestion:any}) => {
+export const CustomCollapseCard = ({questionDetails,bundleDetails,setCurrentQuestion,currentQuestion }:{currentQuestion:any,questionDetails:any,bundleDetails:any,setCurrentQuestion:any}) => {
     const [open, setOpen] = useState(false);
 
     return (
@@ -29,7 +29,7 @@ export const CustomCollapseCard = ({questionDetails,bundleDetails,setCurrentQues
                        {
                         questionDetails[bundleDetails?._id]?.map((question:any,num:number)=>{
                             return (
-                                <div onClick={() => setCurrentQuestion(question)} key={"ifsk" +question?._it +num} className={`w-[3.1rem] h-[3.1rem] relative cursor-pointer rounded-full ${(question?.question_status == 'answered' || question?.question_status == 'reviewed_and_answered') ? (checkCorrectAnswer({ user_answer: question?.user_answer, correct_answer: question?.correct_answer }) == true ? '  text-white bg-green-500' : 'bg-red-500 text-white') :'bg-gray-100 text-[#616161]'} shadow border flex justify-center items-center `}>
+                                <div onClick={() => setCurrentQuestion(question)} key={"ifsk" + question?._it + num} className={`w-[3.1rem] h-[3.1rem] duration-300 relative cursor-pointer rounded-full ${currentQuestion?._id == question?._id ? 'bg-white text-black' : ((question?.question_status == 'answered' || question?.question_status == 'reviewed_and_answered') ? (checkCorrectAnswer({ user_answer: question?.user_answer, correct_answer: question?.correct_answer }) == true ? '  text-white bg-green-500' : 'bg-red-500 text-white') : 'bg-gray-100 text-[#616161]')} shadow border flex justify-center items-center `}>
                                     <p className="text-[0.95rem] z-10 font-semibold">{question?.question_count}</p>
                                     <div className={`hover:w-[3rem] w-7 h-7 m-auto  hover:h-[3rem] rounded-full absolute top-0 right-0  left-0 bottom-0 bg-none hover:bg-[rgba(25,74,29,0.1)] duration-500 ${(question?.question_status == 'answered' || question?.question_status == 'reviewed_and_answered') ? (checkCorrectAnswer({ user_answer: question?.user_answer, correct_answer: question?.correct_answer }) == true ? '  hover:bg-green-700' : 'hover:bg-red-500 ') : 'hover:bg-gray-200'} `}></div>
                                 </div>

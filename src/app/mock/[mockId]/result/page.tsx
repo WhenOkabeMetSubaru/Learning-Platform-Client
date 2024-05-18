@@ -8,6 +8,8 @@ import auth from '@/features/authentication/auth'
 import { CustomCollapseCard } from '@/components/utils/extraComponent'
 import { optionNumberToChar, removeHTMLTagRegex } from '@/components/extrafunction'
 import FilterHtml from '@/components/unknownHtml'
+import { IoCheckmark } from 'react-icons/io5'
+import { RxCross2 } from 'react-icons/rx'
 
 const MockResult = () => {
 
@@ -51,10 +53,24 @@ const MockResult = () => {
         })
     }, [])
 
+    const handleOptionBorderChange = (currentQuestion:any,currentOption:any)=>{
+        
+        if(currentOption.option_no?.toString()==currentQuestion?.correct_answer && currentQuestion?.correct_answer==currentQuestion?.user_answer){
+            return { border: 'border-2 border-green-500' ,background:"bg-green-500",component:<IoCheckmark size={18}/>}
+        }else if(currentQuestion?.user_answer !=='' && currentOption?.option_no?.toString()==currentQuestion?.user_answer && currentQuestion?.user_answer !== currentQuestion?.correct_answer){
+            return { border: 'border-2 border-red-500', background: "bg-red-500", component: <RxCross2 size={18} /> }
+        }else if(currentOption?.option_no?.toString()==currentQuestion?.correct_answer){
+            return { border: 'border-2 border-green-500', background: "bg-green-500", component: <IoCheckmark size={18} /> }
+        }else{
+            return { border: 'border border-gray-500', background: "bg-gray-500", component: optionNumberToChar[currentOption?.option_no]}
+        }
+
+    }
+
     const items: TabsProps['items'] = [
         {
             key: '1',
-            label: <p className=' text-center px-20'>Across Mock Analysis</p>,
+            label: <p className=' text-center px-20'>Mock Solutions</p>,
             children: <section className=' px-3 flex justify-center font-sans '>
                 <div className='min-h-screen flex border w-5/6'>
                     <div className='w-2/3 relative'>
@@ -78,11 +94,16 @@ const MockResult = () => {
                                 {
                                     currentQuestion?.options?.map((option:any,idx:number)=>{
                                         return (
-                                            <div key={"opT" +idx } className='min-h-[8vh]  p-1 leading-6 border relative border-gray-400 w-full rounded flex items-center  px-2'>
-                                                <div className={`w-7 h-7 absolute left-2 top-[25%] rounded-full bg-gray-500 text-white flex justify-center items-center`}>
+                                            <div key={"opT" + idx} className={`min-h-[3rem]  p-1 leading-6 relative cursor-pointer hover:bg-gray-200  w-full rounded flex items-center  px-2 ${handleOptionBorderChange(currentQuestion,option)?.border}`}>
+                                                {/* <div className={`w-7 h-7 absolute left-2 top-[25%] rounded-full bg-gray-500 text-white flex justify-center items-center`}>
                                                     {optionNumberToChar[option?.option_no]}
+                                                    
+                                                </div> */}
+                                                <div className={`w-7 h-7 absolute left-2 top-[25%] rounded-full ${handleOptionBorderChange(currentQuestion,option)?.background} text-white flex justify-center items-center`}>
+                                                    
+                                                    {handleOptionBorderChange(currentQuestion, option)?.component}
                                                 </div>
-                                                <div className='pl-10'><FilterHtml htmlContent={option?.title}/></div>
+                                                <div className='pl-10 leading-5 py-3'><FilterHtml htmlContent={option?.title}/></div>
                                             </div>
                                         )
                                     })
@@ -105,7 +126,7 @@ const MockResult = () => {
                             {
                                 bundleDetails?.map((bundle: any) => {
                                     return (
-                                        <CustomCollapseCard setCurrentQuestion={setCurrentQuestion} bundleDetails={bundle} key={bundle?._id} questionDetails={questionDetails} />
+                                        <CustomCollapseCard currentQuestion={currentQuestion} setCurrentQuestion={setCurrentQuestion} bundleDetails={bundle} key={bundle?._id} questionDetails={questionDetails} />
                                     )
                                 })
                             }
@@ -116,16 +137,16 @@ const MockResult = () => {
 
             </section>,
         },
-        {
-            key: '2',
-            label: <p className=' text-center px-20'>CAT 2022 Slot 2 Question Paper Analysis</p>,
-            children: 'Content of Tab Pane 2',
-        },
-        {
-            key: '3',
-            label: <p className=' text-center px-20'>CAT 2022 Slot 2 Question Paper Solutions</p>,
-            children: 'Content of Tab Pane 3',
-        },
+        // {
+        //     key: '2',
+        //     label: <p className=' text-center px-20'>CAT 2022 Slot 2 Question Paper Analysis</p>,
+        //     children: 'Content of Tab Pane 2',
+        // },
+        // {
+        //     key: '3',
+        //     label: <p className=' text-center px-20'>CAT 2022 Slot 2 Question Paper Solutions</p>,
+        //     children: 'Content of Tab Pane 3',
+        // },
     ];
 
     const handleTabChange = (e: any) => {
