@@ -238,3 +238,28 @@ export const getAllQuestionsByPageAndFilter = async ({pageNumber,pageSize=5}:{pa
         return console.error(error.message)
     }
 }
+
+
+
+
+export const getQuestionAccess = async (questionId: string) => {
+
+    try {
+
+        let response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/question/access/user/` + questionId, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + auth?.isAuthenticated()
+
+            }
+
+        })
+
+        return response.json()
+
+    } catch (error: any) {
+        return console.error(error.message)
+    }
+}

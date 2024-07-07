@@ -1,7 +1,6 @@
 "use client"
 import React, { useState } from 'react'
 import { loginUser } from '../../../features/apiQueries/userapi';
-import cookies from 'next/headers'
 import { handleLoginResponse, handleSignupResponse } from './loginapi';
 import auth from '@/features/authentication/auth';
 import { useRouter } from 'next/navigation';

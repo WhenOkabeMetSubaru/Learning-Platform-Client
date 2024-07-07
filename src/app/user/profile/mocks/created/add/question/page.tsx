@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 
-import { getAllCategories } from '@/features/apiQueries/categoryapi';
+import { getAllCategories, getAllParentCategories, getAllSubCategories } from '@/features/apiQueries/categoryapi';
 
 import auth from '@/features/authentication/auth';
 import Link from 'next/link';
@@ -27,6 +27,8 @@ const AddNewQuestionMultiple = () => {
     const [categoryData, setCategoryData] = useState([]);
 
     const [bundleData, setBundleData] = useState("");
+    const [parentCategoryDetails, setParentCategoryDetails] = useState({value:"",data:[]});
+    const [childCategoryDetails, setChildCategoryDetails] = useState({value:"",data:[]});
     const [bundleQuestion, setBundleQuestions] = useState([]);
     const [tab, setTab] = useState<string>('main');
     const isMounted = useIsMounted();
@@ -78,9 +80,14 @@ const AddNewQuestionMultiple = () => {
 
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
+        getAllParentCategories().then((res) => {
+            if (res.status == false) {
+                setParentCategoryDetails({...parentCategoryDetails,data:res?.data})
+            }
+        })
 
-    },[])
+    }, [])
 
     const [mainDetails, setMainDetails] = useState({
         question: "",
@@ -117,7 +124,7 @@ const AddNewQuestionMultiple = () => {
         }
     )
 
-    const [questionDetails, setQuestionDetails] = useState({ question_topic: "", question_view_type: "full", category: "", awarded_points: 0, negative_points: 0, question_type: "mcq", difficulty: "easy", question_timer_solo: 0 })
+    const [questionDetails, setQuestionDetails] = useState({ question_topic: "", question_view_type: "half", category: "", awarded_points: 0, negative_points: 0, question_type: "mcq", difficulty: "easy", question_timer_solo: 0 })
 
     const handleAddQuestion = async () => {
 
@@ -150,7 +157,7 @@ const AddNewQuestionMultiple = () => {
 
         }
 
-      
+
 
         let response = await handleAddQuestionResponse(finalDetails, auth.isAuthenticated());
 
@@ -159,7 +166,7 @@ const AddNewQuestionMultiple = () => {
         }
 
 
-       
+
     }
 
     async function fetchQuestionsByBundle(bundleId: any) {
@@ -169,8 +176,20 @@ const AddNewQuestionMultiple = () => {
         }
     }
 
+    const handleParentCategoryChange = async (id: string) => {
+        setParentCategoryDetails({...parentCategoryDetails,value:id})
+        let response = await getAllSubCategories(id);
+
+        if (response?.status == false) {
+            setChildCategoryDetails({ ...childCategoryDetails, data: response?.data });
+
+        }
+    }
+
+    
+
     return (
-        isMounted() === true && 
+        isMounted() === true &&
         <section>
             <header className='h-16 w-full left-0 flex justify-between px-3 items-center right-0 top-0 shadow'>
                 <div>
@@ -246,10 +265,10 @@ const AddNewQuestionMultiple = () => {
                         </div>
                         <div className='mt-3'>
                             <label className='text-[0.8rem] p-1'>Category</label>
-                            <select value={questionDetails.category} onChange={(e) => setQuestionDetails({ ...questionDetails, category: e.target.value })} className='outline-none border w-full h-10 rounded'>
+                            <select value={parentCategoryDetails.value} onChange={(e)=>{handleParentCategoryChange(e.target.value)}} className='outline-none border w-full h-10 rounded'>
                                 <option key={0} value="">None</option>
                                 {
-                                    categoryData?.map((categoryItem: any) => {
+                                    parentCategoryDetails?.data?.map((categoryItem: any) => {
                                         return (
                                             <option key={categoryItem?._id} value={categoryItem?._id} >{categoryItem?.name}</option>
                                         )
@@ -267,10 +286,20 @@ const AddNewQuestionMultiple = () => {
                         </div>
                         <div className='mt-3'>
                             <label className='text-[0.8rem] p-1'>Question Topic</label>
-                            <select value={questionDetails.question_topic} onChange={(e) => setQuestionDetails({ ...questionDetails, question_topic: e.target.value })} className='outline-none border w-full h-10 rounded'>
+                            {/* <select value={questionDetails.question_topic} onChange={(e) => setQuestionDetails({ ...questionDetails, question_topic: e.target.value })} className='outline-none border w-full h-10 rounded'>
                                 <option key={0} value="">None</option>
                                 {
                                     categoryData?.map((categoryItem: any) => {
+                                        return (
+                                            <option key={categoryItem?._id} value={categoryItem?._id} >{categoryItem?.name}</option>
+                                        )
+                                    })
+                                }
+                            </select> */}
+                            <select value={questionDetails.category} onChange={(e) => setQuestionDetails({ ...questionDetails, category: e.target.value })} className='outline-none border w-full h-10 rounded'>
+                                <option key={0} value="">None</option>
+                                {
+                                    childCategoryDetails?.data?.map((categoryItem: any) => {
                                         return (
                                             <option key={categoryItem?._id} value={categoryItem?._id} >{categoryItem?.name}</option>
                                         )

@@ -16,6 +16,7 @@ const UserAuth = ({ children }:{children:ReactNode}) => {
 
 
     useEffect(() => {
+        
         if (auth.isAuthenticated() == false) {
             verify();
         }
@@ -39,14 +40,14 @@ export const UserAuthFinal = () => {
 
 const UserProviderAuth = () => {
     const [isUpdated, setIsUpdated] = useState(false);
-    const [currentUser, setCurrentUser] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
     const [openMenu, setOpenMenu] = useState(false);
 
     const Router = useRouter();
 
     useEffect(() => {
       
-        if(auth.isAuthenticated()!==false){
+        if(auth.isAuthenticated() !== false || !currentUser){
             fetch(`${process.env.NEXT_PUBLIC_SERVER_LINK}/api/v1/user/info`, {
                 method: 'GET',
                 headers: {
@@ -56,11 +57,12 @@ const UserProviderAuth = () => {
             }).then(res => res.json())
                 .then(data => {
 
-                    setCurrentUser(data.data)
+                   
+                    setCurrentUser(data?.data)
                 })
         }
         
-    }, [])
+    }, [auth.isAuthenticated()])
 
   
 

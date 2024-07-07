@@ -6,7 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 
 
 import React, { useEffect, useState } from 'react'
-import { getAllCategories } from '@/features/apiQueries/categoryapi';
+import { getAllCategories, getAllParentCategories, getAllSubCategories } from '@/features/apiQueries/categoryapi';
 import { handleAddQuestionResponse } from './addapicomponent';
 import auth from '@/features/authentication/auth';
 // import { Editor } from '@/components/richTextEditor/Editor';
@@ -16,6 +16,7 @@ import { Input, notification } from 'antd';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useIsMounted } from '@/components/customhooks/useIsMounted';
+import { getQuestionByID } from '@/features/apiQueries/questionapi';
 
 const Editor = dynamic(()=>import("@/components/richTextEditor/Editor").then((obj)=>obj.Editor)
 )
@@ -27,31 +28,48 @@ const alphabets = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '
 const AddNewQuestion = () => {
 
     const [categoryData, setCategoryData] = useState([]);
+    const [parentCategoryData,setParentCategoryData]  = useState<any>([]);
+    const [childCategoryData,setChildCategoryData] = useState([]);
     const urlParams = useSearchParams();
     const  [parentId,setParentId] = useState<any>(null);
 
     const isMounted = useIsMounted()
 
+    const [mainDetails, setMainDetails] = useState({
+        question: "",
+        answer_explanation: "",
+        primary_data: "",
+        title: ""
+    });
+    const [questionDetails, setQuestionDetails] = useState({ access_type: "single", question_topic: "", question_view_type: "half", category: "", awarded_points: 0, negative_points: 0, question_type: "mcq", difficulty: "easy", question_timer_solo: 0 })
+
     useEffect(() => {
         async function fetchCategory() {
             let data = await getAllCategories();
             setCategoryData(data?.data);
+            let parentData = await getAllParentCategories();
+         
+            setParentCategoryData(parentData?.data);
+           
         }
 
         const searchParams = new URLSearchParams(urlParams);
         setParentId(searchParams?.get('parentId') || "");
+
+        if(searchParams?.get('parentId')){
+            getQuestionByID(searchParams.get('parentId')!).then((res)=>{
+                if(res.status ===false){
+                    setMainDetails({...mainDetails,primary_data:res?.data?.primary_data})
+                }
+            })
+        }
        
    
 
         fetchCategory()
     }, [])
 
-    const [mainDetails, setMainDetails] = useState({
-        question: "",
-        answer_explanation: "",
-        primary_data: "",
-        title:""
-    });
+   
 
     const [options, setOptions] = useState(
         {
@@ -80,7 +98,7 @@ const AddNewQuestion = () => {
         }
     )
 
-    const [questionDetails, setQuestionDetails] = useState({access_type:"single", question_topic: "", question_view_type: "half", category: "", awarded_points: 0, negative_points: 0, question_type: "mcq", difficulty: "easy", question_timer_solo: 0 })
+
 
     const handleAddQuestion = async () => {
 
@@ -121,6 +139,14 @@ const AddNewQuestion = () => {
 
         if(response.status==false){
             return notification.success({message:response.info})
+        }
+    }
+
+    const handleSubCategoryData  = async(id:string)=>{
+        let data = await getAllSubCategories(id);
+
+        if(data?.data){
+            setChildCategoryData(data?.data);
         }
     }
 
@@ -203,10 +229,10 @@ const AddNewQuestion = () => {
                     </div>
                     <div className='mt-3'>
                         <label className='text-[0.8rem] p-1'>Category</label>
-                        <select value={questionDetails.category} onChange={(e) => setQuestionDetails({ ...questionDetails, category: e.target.value })} className='outline-none border w-full h-10 rounded'>
+                        <select value={questionDetails.category} onChange={(e) => { setQuestionDetails({ ...questionDetails, category: e.target.value });handleSubCategoryData(e.target.value); }} className='outline-none border w-full h-10 rounded'>
                             <option key={0} value="">None</option>
                             {
-                                categoryData?.map((categoryItem: any) => {
+                              parentCategoryData &&  parentCategoryData?.map((categoryItem: any) => {
                                     return (
                                         <option key={categoryItem?._id} value={categoryItem?._id} >{categoryItem?.name}</option>
                                     )
@@ -227,7 +253,7 @@ const AddNewQuestion = () => {
                         <select value={questionDetails.question_topic} onChange={(e) => setQuestionDetails({ ...questionDetails, question_topic: e.target.value })} className='outline-none border w-full h-10 rounded'>
                             <option key={0} value="">None</option>
                             {
-                                categoryData?.map((categoryItem: any) => {
+                                childCategoryData?.map((categoryItem: any) => {
                                     return (
                                         <option key={categoryItem?._id} value={categoryItem?._id} >{categoryItem?.name}</option>
                                     )

@@ -542,9 +542,14 @@ const Home: NextPage = () => {
 
     const handleSectionSubmit = async () => {
 
-        let latestCurrentSection = bundldeDetailsRef?.current?.find((item: any) => {
+
+        let bundleResponse = await getLatestBundlesDataByMockUser({ mockId: params.mockId })
+        let latestBundleData = bundleResponse?.status == false ? bundleResponse?.data : bundldeDetailsRef?.current;
+
+        let latestCurrentSection = latestBundleData?.find((item: any) => {
             return item?.is_submitted == false
         })
+
 
 
         let res = await updateMockBundleSubmit(latestCurrentSection?._id, auth?.isAuthenticated());
@@ -552,8 +557,10 @@ const Home: NextPage = () => {
         if (res.status == false) {
 
             let sectionData = bundldeDetailsRef?.current;
+           
             if (sectionData[sectionData?.length - 1]?._id == latestCurrentSection?._id) {
-                return router.push(`/mock/${params.mockId}/result`);
+               
+                return await router.push(`/mock/${params.mockId}/result`);
 
             }
 

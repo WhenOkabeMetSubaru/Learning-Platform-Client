@@ -1,10 +1,11 @@
 "use client"
 import useWindowDimensions from '@/components/customhooks/useDimensionHook';
-import { handleAnswerToColor } from '@/components/extrafunction';
+import { handleAnswerToColor, questionStatus } from '@/components/extrafunction';
 import FilterHtml from '@/components/unknownHtml';
-import { getQuestionByID, getQuestionDetails } from '@/features/apiQueries/questionapi';
+import { getQuestionByID, getQuestionDetails, updateQuestionStatusForMock } from '@/features/apiQueries/questionapi';
+import auth from '@/features/authentication/auth';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import { RxEnterFullScreen } from "react-icons/rx";
@@ -14,6 +15,17 @@ const QuestionsView = () => {
     const [currentQuestion, setCurrentQuestion] = useState<any>();
     const [questionCompleteDetails, setQuestionCompleteDetails] = useState<any>([]);
     const [multipleInputs, setMultipleInputs] = useState<any>(null);
+    const [answerCategory, setAnswerCategory] = useState<any>({
+        'answered': 0,
+        'not_answered': 0,
+        'not_visited': 0,
+        'reviewed_not_answered': 0,
+        'reviewed_and_answered': 0
+    })
+
+
+    const router = useRouter();
+
     const regex = /(<([^>]+)>)/gi;
 
     const handle = useFullScreenHandle();
@@ -39,6 +51,19 @@ const QuestionsView = () => {
                     }
                 })
 
+                let seperateCategory: any = {
+                    'answered': 0,
+                    'not_answered': 0,
+                    'not_visited': 0,
+                    'reviewed_not_answered': 0,
+                    'reviewed_and_answered': 0
+                };
+
+                for (let i = 0; i < res?.data?.length; i++) {
+                    seperateCategory[res?.data[i]?.question_status] += 1;
+                }
+
+
                 setMultipleInputs(inputs)
             }
         })
@@ -62,6 +87,204 @@ const QuestionsView = () => {
         setCurrentQuestion(questionCompleteDetails[index]);
         let inputs = handleGetInputData(questionCompleteDetails[index]);
         setMultipleInputs(inputs)
+    }
+
+    const handleChangeQuestionStatus = async (questionId: string, index: number) => {
+
+        // if(currentQuestion?.question_status !=='not_visited') {
+
+        //     console.log('inside this',findQuestion)
+        //     return;
+        // }
+
+        let findQuestion = questionCompleteDetails?.find((item: any) => {
+            return item?._id == questionId
+        })
+
+        if (findQuestion) {
+            setCurrentQuestion(findQuestion);
+            let tmp = handleGetInputData(findQuestion);
+            setMultipleInputs(tmp);
+        }
+
+        if (findQuestion?.question_status !== 'not_visited') {
+            return;
+        }
+
+
+
+
+        let response = await updateQuestionStatusForMock(questionStatus[1], "", questionId, auth?.isAuthenticated());
+
+        if (response.status == false) {
+            setCurrentQuestion(response?.data);
+            let temp = [...questionCompleteDetails];
+            temp[index] = response.data;
+
+            //category update
+          
+
+            let seperateCategory: any = {
+                'answered': 0,
+                'not_answered': 0,
+                'not_visited': 0,
+                'reviewed_not_answered': 0,
+                'reviewed_and_answered': 0
+            };
+
+            for (let i = 0; i <temp?.length; i++) {
+                seperateCategory[temp[i].question_status] += 1;
+            }
+
+            setAnswerCategory(seperateCategory);
+
+            setQuestionCompleteDetails(temp)
+            let tmp = handleGetInputData(response.data);
+            setMultipleInputs(tmp);
+
+        }
+    }
+
+    const handleReviewAndNextQuestion = async () => {
+
+
+
+
+        let i = 0;
+
+        let tempArr = [...questionCompleteDetails];
+
+        while (i < tempArr?.length) {
+            if (tempArr[i]?._id == currentQuestion?._id) {
+
+                break;
+            }
+
+            i++;
+        }
+
+        // @ts-ignore
+        // let formDetails = document.forms?.questionAnswerInputForm;
+
+        // let formData = new FormData(formDetails);
+
+
+        let solutionFetch = multipleInputs?.find((item) => {
+
+            return item.checked == true
+        })
+
+
+
+        let response = await updateQuestionStatusForMock(questionStatus[solutionFetch == null ? 3 : 4], solutionFetch?.index?.toString() || "", currentQuestion?._id, auth?.isAuthenticated());
+
+        if (response.status == false) {
+            setCurrentQuestion(response?.data);
+            let temp = [...questionCompleteDetails];
+            temp[i] = response.data;
+
+
+            let seperateCategory: any = {
+                'answered': 0,
+                'not_answered': 0,
+                'not_visited': 0,
+                'reviewed_not_answered': 0,
+                'reviewed_and_answered': 0
+            };
+
+            for (let i = 0; i < temp?.length; i++) {
+                seperateCategory[temp[i].question_status] += 1;
+            }
+
+            setAnswerCategory(seperateCategory);
+
+            setQuestionCompleteDetails(temp)
+            if (i + 1 !== tempArr?.length) {
+                setCurrentQuestion(tempArr[i + 1])
+                let tempData = handleGetInputData(tempArr[i + 1]);
+                setMultipleInputs(tempData)
+
+            } else {
+                setCurrentQuestion(tempArr[0])
+                setMultipleInputs(handleGetInputData(tempArr[0]))
+                let tempData = handleGetInputData(tempArr[0]);
+                setMultipleInputs(tempData);
+            }
+
+
+
+        }
+
+    }
+
+    const handleSaveAndNextQuestion = async () => {
+
+
+        let i = 0;
+
+        let tempArr = [...questionCompleteDetails];
+
+        while (i < tempArr?.length) {
+            if (tempArr[i]?._id == currentQuestion?._id) {
+                break;
+            }
+
+            i++;
+        }
+
+        // @ts-ignore
+        // let formDetails = document.forms?.questionAnswerInputForm;
+
+        // let formData = new FormData(formDetails);
+
+        let solutionFetch = multipleInputs?.find((item) => {
+
+            return item.checked == true
+        })
+
+
+        let response = await updateQuestionStatusForMock(questionStatus[!solutionFetch ? 1 : 2], solutionFetch ? solutionFetch?.index?.toString() : "", currentQuestion?._id, auth?.isAuthenticated());
+
+        if (response.status == false) {
+            setCurrentQuestion(response?.data);
+            let temp = [...questionCompleteDetails];
+            temp[i] = response.data;
+
+         
+
+            let seperateCategory: any = {
+                'answered': 0,
+                'not_answered': 0,
+                'not_visited': 0,
+                'reviewed_not_answered': 0,
+                'reviewed_and_answered': 0
+            };
+
+            for (let i = 0; i < temp?.length; i++) {
+                seperateCategory[temp[i].question_status] += 1;
+            }
+
+            setAnswerCategory(seperateCategory);
+
+            setQuestionCompleteDetails(temp)
+            if (i + 1 !== tempArr?.length) {
+                setCurrentQuestion(tempArr[i + 1])
+                setMultipleInputs(handleGetInputData(tempArr[i + 1]))
+            } else {
+                setCurrentQuestion(tempArr[0])
+                setMultipleInputs(handleGetInputData(tempArr[0]))
+            }
+
+
+        }
+    }
+
+    const handleClearResponse = async () => {
+
+        let inputs = handleGetInputData(currentQuestion, "clear");
+        setMultipleInputs(inputs)
+
+
     }
 
     return (
@@ -90,31 +313,12 @@ const QuestionsView = () => {
                             {/* Timer bar */}
                             <div className='h-[3.5vh] flex text-sm font-semibold justify-between px-5 items-center'>
                                 <span>Section</span>
-                                {/* <span className='font-bold'>Time Left: 2 : 49 : 22</span> */}
-                                {/* {
-                              multipleTimer?.map((timerItem: any, i: any) => {
-                                  let currentTime = new Date();
-
-                                  return (timerItem?.start_time <= currentTime) && (currentTime <= timerItem?.end_time) && <CountdownTimer func={handleChangeSection} setMultipleTimer={setMultipleTimer} multipleTimer={multipleTimer} key={i} initialDate={timerItem?.end_time} />
-                              })
-                          } */}
+                               
                             </div>
 
                             {/* Sections Bar */}
                             <div className='h-[5vh] text-[0.9rem] border-b-2 shadow-xs flex px-5 border font-semibold border-gray-300'>
 
-                                {/* {
-                              bundleDetails?.map((bundle: any, idx: number) => {
-                                  return (
-                                      <div key={bundle?._id} className={`flex ${idx == 0 ? 'border-l-2' : ''} border-r-2 ${currentSection?._id == bundle?._id ? 'text-white bg-[#337ab7]' : 'text-[#337ab7] bg-white'}  border-gray-300 px-4 font-semibold justify-center items-center`}>
-                                          <div className='flex gap-x-1 items-center'>
-                                              <p>{bundle?.title}</p>
-                                              <BsInfoCircleFill color={currentSection?._id !== bundle?._id ? "#337ab7" : 'white'} />
-                                          </div>
-                                      </div>
-                                  )
-                              })
-                          } */}
                             </div>
                             <div className='h-[5vh] px-5 border-b border-gray-300'>
                                 <div className='text-orange-500 flex text-sm font-semibold pt-2'>Type: {currentQuestion?.question_type == 'mcq' ? "MCQ" : "TITA"} | Marks: <p className='text-green-800'>+{currentQuestion?.awarded_points}</p>&nbsp; -{currentQuestion?.negative_points}</div>
@@ -142,7 +346,7 @@ const QuestionsView = () => {
                                                         <div className='flex flex-col gap-y-6 items-start'>
 
                                                             {
-                                                                
+
 
                                                                 currentQuestion?.access_type !== 'read_only' && multipleInputs?.map((inp: any) => {
                                                                     return (
@@ -186,14 +390,14 @@ const QuestionsView = () => {
 
                             <div className='absolute border-t border-gray-300 flex justify-between items-center right-0 left-0 bottom-0 h-12 px-3'>
                                 <div className='flex gap-x-1'>
-                                    <button type="button" className='flex justify-center text-[1.05rem] border-gray-400 border items-center w-56 bg-gray-200 h-9 rounded-sm'>
+                                    <button onClick={handleReviewAndNextQuestion} type="button" className='flex justify-center text-[1.05rem] border-gray-400 border items-center w-56 bg-gray-200 h-9 rounded-sm'>
                                         <p>Mark For Review & Next</p>
                                     </button>
-                                    <button type="button" className='flex justify-center border-gray-400 border items-center w-40 bg-gray-200 h-9 rounded-sm'>
+                                    <button onClick={handleClearResponse} type="button" className='flex justify-center border-gray-400 border items-center w-40 bg-gray-200 h-9 rounded-sm'>
                                         <p>Clear Response</p>
                                     </button>
                                 </div>
-                                <button type="button" className='flex justify-center border-gray-400 text-white border items-center w-36 bg-[#0c7cd5] h-9 rounded-sm'>
+                                <button type="button" onClick={handleSaveAndNextQuestion} className='flex justify-center border-gray-400 text-white border items-center w-36 bg-[#0c7cd5] h-9 rounded-sm'>
                                     <p>Save & Next</p>
                                 </button>
                             </div>
@@ -255,20 +459,20 @@ const QuestionsView = () => {
                                         {
                                             questionCompleteDetails?.map((item: any, questionCount: number) => {
                                                 return (
-                                                    <div onClick={() => { handleQuestionClick(questionCount) }} key={item?._id} className={`flex   cursor-pointer text-[1.15rem] justify-center items-center ${handleAnswerToColor(item?.question_status)}`}>
+                                                    <div onClick={() => { handleChangeQuestionStatus(item?._id, questionCount) }} key={item?._id} className={`flex   cursor-pointer text-[1.15rem] justify-center items-center ${handleAnswerToColor(item?.question_status)}`}>
                                                         <p>{questionCount + 1}</p>
                                                     </div>
                                                 )
                                             })
                                         }
-                                       
+
 
 
                                     </div>
                                 </div>
 
                                 <div className='h-16 bg-[#e5f6fd] flex justify-center items-center'>
-                                    <button onClick={() => { }} className='flex justify-center items-center w-20 h-[2.2rem] bg-[#38aae9] text-white rounded-sm shadow-sm'>
+                                    <button onClick={() => { router.push(`/question/solve/${params.questionId}/result`) }} className='flex justify-center items-center w-20 h-[2.2rem] bg-[#38aae9] text-white rounded-sm shadow-sm'>
                                         <p>Submit</p>
                                     </button>
                                 </div>

@@ -3,16 +3,18 @@
 
 import UserLayout from '@/app/layout/userLayout'
 import FilterHtml, { FilterHtmlReturnData } from '@/components/unknownHtml';
-import { getAllQuestionsByPageAndFilter, getAllQuestionsHomePage } from '@/features/apiQueries/questionapi';
+import { getAllQuestionsByPageAndFilter, getAllQuestionsHomePage, getQuestionAccess } from '@/features/apiQueries/questionapi';
 import UserAuth from '@/features/contextApi/userAuthProvider'
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 const QuestionAll = () => {
 
     const [questionDetails, setQuestionDetails] = useState<any>({});
-    const [pageNumber, setPageNumber] = useState(1)
+    const [pageNumber, setPageNumber] = useState(1);
+    const router = useRouter();
 
     useEffect(() => {
 
@@ -46,6 +48,21 @@ const QuestionAll = () => {
         })
     }
 
+    const handleNavigateQuestionPage  = async (item:any)=>{
+       
+
+        if(item.access_type==="read_only"){
+            router.push(`/question/view/${item?._id}`)
+        }else{
+            let data = await getQuestionAccess(item._id);
+
+            if(data.status==false){
+                router.push(`/question/solve/${data?.data[0]?._id}`)
+            }
+            
+        }
+    }
+
     return (
         <UserLayout>
             <section>
@@ -58,7 +75,7 @@ const QuestionAll = () => {
                             questionDetails?.data?.map((item: any, i: number) => {
                                 return (
                                     /* eslint-disable-line */
-                                    <QuestionComponentHome key={i} item={item} />
+                                    <QuestionComponentHome handleNavigateQuestionPage={()=>handleNavigateQuestionPage(item)} key={i} item={item} />
                                 )
                             })
                         }
@@ -73,7 +90,10 @@ const QuestionAll = () => {
 export default QuestionAll
 
 /* eslint-disable-line */
-const QuestionComponentHome = ({ item }: { item: any }) => {
+const QuestionComponentHome = ({ item,handleNavigateQuestionPage }: { item: any ,handleNavigateQuestionPage:any}) => {
+
+
+
     return (
         <div className='min-h-[20vh] py-2 px-2.5 relative border rounded shadow w-1/2'>
             <p className='text-lg font-semibold py-3'>{item?.title || "No Title"}</p>
@@ -81,11 +101,11 @@ const QuestionComponentHome = ({ item }: { item: any }) => {
                 <FilterHtml htmlContent={item?.primary_data ? item?.primary_data?.substring(0, 400) : item?.question} />
             </div>
             <div className='absolute right-3 bottom-2 flex gap-x-2'>
-                <Link href={"/question/view/" + item?._id}>
-                    <div className='flex justify-center items-center w-28 h-8 rounded shadow bg-blue-600 hover:bg-blue-700 text-white'>
+               
+                    <div onClick={handleNavigateQuestionPage} className='flex cursor-pointer justify-center items-center w-28 h-8 rounded shadow bg-blue-600 hover:bg-blue-700 text-white'>
                         <p>Interface</p>
                     </div>
-                </Link>
+               
             </div>
         </div>
     )
